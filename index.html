@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Gateway</title>
+    <style>
+        :root {
+            --primary: #4e54c8;
+            --secondary: #8f94fb;
+            --success: #38a169;
+            --danger: #e53e3e;
+            --light: #f7fafc;
+            --dark: #2d3748;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .payment-container {
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            width: 100%;
+            max-width: 500px;
+            transition: var(--transition);
+        }
+
+        .payment-container:hover {
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            transform: translateY(-2px);
+        }
+
+        .payment-header {
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .payment-header h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .payment-body {
+            padding: 25px;
+        }
+
+        .payment-method {
+            margin-bottom: 25px;
+        }
+
+        .method-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--dark);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+
+        .method-title svg {
+            margin-right: 10px;
+        }
+
+        .method-option {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            border-radius: 8px;
+            background-color: var(--light);
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .method-option:hover {
+            background-color: #ebf4ff;
+            transform: translateX(5px);
+        }
+
+        .method-option.active {
+            border-left: 4px solid var(--primary);
+            background-color: #ebf4ff;
+        }
+
+        .method-icon {
+            width: 40px;
+            height: 40px;
+            margin-right: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background-color: white;
+            box-shadow: var(--shadow);
+        }
+
+        .method-icon img {
+            width: 24px;
+            height: 24px;
+        }
+
+        .method-details {
+            flex: 1;
+        }
+
+        .method-name {
+            font-weight: 600;
+            color: var(--dark);
+            margin-bottom: 3px;
+        }
+
+        .method-info {
+            font-size: 0.85rem;
+            color: #718096;
+        }
+
+        .qr-container {
+            text-align: center;
+            padding: 20px;
+            background-color: var(--light);
+            border-radius: 8px;
+            margin-top: 15px;
+            transition: var(--transition);
+        }
+
+        .qr-container:hover {
+            transform: scale(1.01);
+        }
+
+        .qr-image {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            box-shadow: var(--shadow);
+        }
+
+        .copy-btn {
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+        }
+
+        .copy-btn:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+
+        .copy-btn svg {
+            margin-right: 5px;
+        }
+
+        .success-message {
+            background-color: rgba(56, 161, 105, 0.1);
+            color: var(--success);
+            padding: 10px 15px;
+            border-radius: 6px;
+            margin-top: 15px;
+            font-size: 0.9rem;
+            display: none;
+            align-items: center;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        .success-message svg {
+            margin-right: 8px;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            margin: 20px 0;
+            color: #a0aec0;
+            font-size: 0.8rem;
+        }
+
+        .divider::before, .divider::after {
+            content: "";
+            flex: 1;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .divider::before {
+            margin-right: 10px;
+        }
+
+        .divider::after {
+            margin-left: 10px;
+        }
+
+        @media (max-width: 480px) {
+            .payment-body {
+                padding: 15px;
+            }
+            
+            .method-option {
+                padding: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="payment-container">
+        <div class="payment-header">
+            <h1>Payment Gateway</h1>
+        </div>
+        
+        <div class="payment-body">
+            <div class="payment-method">
+                <div class="method-title">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M12 8V16" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M8 12H16" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    Payment Methods
+                </div>
+                
+                <div class="method-option active" onclick="showMethod('dana')">
+                    <div class="method-icon">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/7/72/Logo_dana_blue.svg" alt="DANA">
+                    </div>
+                    <div class="method-details">
+                        <div class="method-name">DANA</div>
+                        <div class="method-info">Send payment to DANA number</div>
+                    </div>
+                </div>
+                
+                <div class="method-option" onclick="showMethod('gopay')">
+                    <div class="method-icon">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/8/86/Gopay_logo.svg" alt="Gopay">
+                    </div>
+                    <div class="method-details">
+                        <div class="method-name">Gopay</div>
+                        <div class="method-info">Send payment to Gopay number</div>
+                    </div>
+                </div>
+                
+                <div class="method-option" onclick="showMethod('qris')">
+                    <div class="method-icon">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d0/QR_code_for_mobile_English_Wikipedia.svg/1200px-QR_code_for_mobile_English_Wikipedia.svg.png" alt="QRIS">
+                    </div>
+                    <div class="method-details">
+                        <div class="method-name">QRIS</div>
+                        <div class="method-info">Scan QR code to pay</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="dana-method" class="method-content">
+                <div class="method-title">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M17 9V7C17 5.89543 16.1046 5 15 5H5C3.89543 5 3 5.89543 3 7V17C3 18.1046 3.89543 19 5 19H15C16.1046 19 17 18.1046 17 17V15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M21 3H11C10.4477 3 10 3.44772 10 4V14C10 14.5523 10.4477 15 11 15H21C21.5523 15 22 14.5523 22 14V4C22 3.44772 21.5523 3 21 3Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M14 12H18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    DANA Payment
+                </div>
+                
+                <p style="margin-bottom: 15px; color: #4a5568;">Send payment to the following DANA number:</p>
+                
+                <div style="background-color: #f7fafc; padding: 15px; border-radius: 8px; margin-bottom: 15px;">
+                    <div style="font-size: 0.9rem; color: #718096; margin-bottom: 5px;">DANA Number</div>
+                    <div style="font-size: 1.2rem; font-weight: 600; color: #2d3748;">0895 3797 66665</div>
+                </div>
+                
+                <button class="copy-btn" onclick="copyToClipboard('0895379766665', 'DANA number copied to clipboard!')">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M8 16H6C4.89543 16 4 15.1046 4 14V6C4 4.89543 4.89543 4 6 4H14C15.1046 4 16 4.89543 16 6V8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M18 20H10C8.89543 20 8 19.1046 8 18V10C8 8.89543 8.89543 8 10 8H18C19.1046 8 20 8.89543 20 10V18C20 19.1046 19.1046 20 18 20Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    Copy Number
+                </button>
+                
+                <div class="success-message" id="dana-success">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M22 11.08V12C21.9988 14.1564 21.3005 16.2547 20.0093 17.9818C18.7182 19.709 16.9033 20.9725 14.8354 21.5839C12.7674 22.1953 10.5573 22.1219 8.53447 21.3746C6.51168 20.6273 4.78465 19.2461 3.61096 17.4371C2.43727 15.628 1.87979 13.4881 2.02168 11.3363C2.16356 9.18455 2.99721 7.13631 4.39828 5.49706C5.79935 3.85781 7.69279 2.71537 9.79619 2.24013C11.8996 1.7649 14.1003 1.98232 16.07 2.85999" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M22 4L12 14.01L9 11.01" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    <span id="dana-message"></span>
+                </div>
+            </div>
+            
+            <div id="gopay-method" class="method-content" style="display: none;">
+                <div class="method-title">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M17 9V7C17 5.89543 16.1046 5 15 5H5C3.89543 5 3 5.89543 3 7V17C3 18.1046 3.89543 19 5 19H15C16.1046 19 17 18.1046 17 17V15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M21 3H11C10.4477 3 10 3.44772 10 4V14C10 14.5523 10.4477 15 11 15H21C21.5523 15 22 14.5523 22 14V4C22 3.44772 21.5523 3 21 3Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M14 12H18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    Gopay Payment
+                </div>
+                
+                <p style="margin-bottom: 15px; color: #4a5568;">Send payment to the following Gopay number:</p>
+                
+                <div style="background-color: #f7fafc; padding: 15px; border-radius: 8px; margin-bottom: 15px;">
+                    <div style="font-size: 0.9rem; color: #718096; margin-bottom: 5px;">Gopay Number</div>
+                    <div style="font-size: 1.2rem; font-weight: 600; color: #2d3748;">0895 3797 66665</div>
+                </div>
+                
+                <button class="copy-btn" onclick="copyToClipboard('0895379766665', 'Gopay number copied to clipboard!')">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M8 16H6C4.89543 16 4 15.1046 4 14V6C4 4.89543 4.89543 4 6 4H14C15.1046 4 16 4.89543 16 6V8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M18 20H10C8.89543 20 8 19.1046 8 18V10C8 8.89543 8.89543 8 10 8H18C19.1046 8 20 8.89543 20 10V18C20 19.1046 19.1046 20 18 20Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    Copy Number
+                </button>
+                
+                <div class="success-message" id="gopay-success">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M22 11.08V12C21.9988 14.1564 21.3005 16.2547 20.0093 17.9818C18.7182 19.709 16.9033 20.9725 14.8354 21.5839C12.7674 22.1953 10.5573 22.1219 8.53447 21.3746C6.51168 20.6273 4.78465 19.2461 3.61096 17.4371C2.43727 15.628 1.87979 13.4881 2.02168 11.3363C2.16356 9.18455 2.99721 7.13631 4.39828 5.49706C5.79935 3.85781 7.69279 2.71537 9.79619 2.24013C11.8996 1.7649 14.1003 1.98232 16.07 2.85999" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M22 4L12 14.01L9 11.01" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    <span id="gopay-message"></span>
+                </div>
+            </div>
+            
+            <div id="qris-method" class="method-content" style="display: none;">
+                <div class="method-title">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M3 5H11C12.1046 5 13 5.89543 13 7V11M13 11V13M13 11H11M13 11H15M9 11V13M9 11V9M9 11H7M9 11H11M21 9V17C21 18.1046 20.1046 19 19 19H11C9.89543 19 9 18.1046 9 17V15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M15 9H17V11H15V9Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M15 13H17V15H15V13Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M11 15H13V17H11V15Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M7 15H9V17H7V15Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    QRIS Payment
+                </div>
+                
+                <p style="margin-bottom: 15px; color: #4a5568;">Scan the QR code below to make payment:</p>
+                
+                <div class="qr-container">
+                    <img src="https://files.catbox.moe/jd36xe.jpg" alt="QRIS Code" class="qr-image">
+                    <p style="color: #718096; font-size: 0.9rem; margin-bottom: 15px;">Scan this QR code using your mobile banking or e-wallet app</p>
+                    <button class="copy-btn" onclick="copyToClipboard('https://files.catbox.moe/jd36xe.jpg', 'QRIS image link copied to clipboard!')">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M8 16H6C4.89543 16 4 15.1046 4 14V6C4 4.89543 4.89543 4 6 4H14C15.1046 4 16 4.89543 16 6V8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M18 20H10C8.89543 20 8 19.1046 8 18V10C8 8.89543 8.89543 8 10 8H18C19.1046 8 20 8.89543 20 10V18C20 19.1046 19.1046 20 18 20Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        Copy QR Link
+                    </button>
+                </div>
+                
+                <div class="success-message" id="qris-success">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M22 11.08V12C21.9988 14.1564 21.3005 16.2547 20.0093 17.9818C18.7182 19.709 16.9033 20.9725 14.8354 21.5839C12.7674 22.1953 10.5573 22.1219 8.53447 21.3746C6.51168 20.6273 4.78465 19.2461 3.61096 17.4371C2.43727 15.628 1.87979 13.4881 2.02168 11.3363C2.16356 9.18455 2.99721 7.13631 4.39828 5.49706C5.79935 3.85781 7.69279 2.71537 9.79619 2.24013C11.8996 1.7649 14.1003 1.98232 16.07 2.85999" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M22 4L12 14.01L9 11.01" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    <span id="qris-message"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showMethod(method) {
+            // Hide all method contents
+            document.querySelectorAll('.method-content').forEach(el => {
+                el.style.display = 'none';
+            });
+            
+            // Show selected method
+            document.getElementById(method + '-method').style.display = 'block';
+            
+            // Update active state for options
+            document.querySelectorAll('.method-option').forEach(el => {
+                el.classList.remove('active');
+            });
+            event.currentTarget.classList.add('active');
+        }
+        
+        function copyToClipboard(text, successMessage) {
+            navigator.clipboard.writeText(text).then(() => {
+                const method = event.currentTarget.closest('.method-content').id.replace('-method', '');
+                const successEl = document.getElementById(method + '-success');
+                const messageEl = document.getElementById(method + '-message');
+                
+                messageEl.textContent = successMessage;
+                successEl.style.display = 'flex';
+                
+                setTimeout(() => {
+                    successEl.style.display = 'none';
+                }, 3000);
+            }).catch(err => {
+                console.error('Failed to copy: ', err);
+            });
+        }
+    </script>
+</body>
+</html>
